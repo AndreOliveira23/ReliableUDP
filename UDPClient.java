@@ -1,54 +1,56 @@
-// Java program to illustrate Client side
-// Implementation using DatagramSocket
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-public class UDPClient
-{
-    public static void main(String args[]) throws IOException
-    {
-        Scanner sc = new Scanner(System.in);
+public class UDPClient {
+    public static void main(String args[]) throws IOException{
+        Scanner teclado = new Scanner(System.in);
 
-        // Step 1:Create the socket object for
-        // carrying the data.
-        DatagramSocket ds = new DatagramSocket();
+        //Criando socket para enviar dados (mensagem)
+        DatagramSocket datagrama = new DatagramSocket();
 
         InetAddress ip = InetAddress.getLocalHost();
-        byte buf[] = null;
+        byte buffer[] = null;
 
-        // loop while user not enters "bye"
-        while (true)
-        {
-            String inp = sc.nextLine();
+        //Loop enquanto cliente não enviar "bye"
+        while (true){
+            String input = teclado.nextLine();
 
-            // convert the String input into the byte array.
-            buf = inp.getBytes();
+            /*Convertendo String em array de Bytes
+            *(Construtor do método "DatagramPacket" requer array de bytes como primeiro parâmetro)
+            * */
+            buffer = input.getBytes();
 
-            // Step 2 : Create the datagramPacket for sending
-            // the data.
-            DatagramPacket DpSend =
-                    new DatagramPacket(buf, buf.length, ip, 1234);
+           //Criando datagrama para enviar os dados (mensagem) pela porta 1234
+            DatagramPacket pacote = new DatagramPacket(buffer, buffer.length, ip, 1234);
 
-            // Step 3 : invoke the send call to actually send
-            // the data.
-            ds.send(DpSend);
+            //Enviando dados
+            datagrama.send(pacote);
 
             //Recebendo ACK
-            DatagramSocket ack = new DatagramSocket(1235);
-            byte[] receive = new byte[65535];
-            DatagramPacket DpReceive = null;
+            DatagramSocket ack = new DatagramSocket(1235);//Conectando ao socket de envio e recebimento de ack
+            byte[] receive = new byte[65535];//Criando array de bytes para usar no método "DatagramPacket"
+            DatagramPacket ReceivePacote = null;
 
-            DpReceive = new DatagramPacket(receive, receive.length);
-            ack.receive(DpReceive);
-            System.out.println("Ack Recebido!: "+receive.toString());
+            ReceivePacote = new DatagramPacket(receive, receive.length);//Colocando conteudo do ack na variável
+            ack.receive(ReceivePacote);//Recebendo ack via socket 1235
+            String texto = new String(ReceivePacote.getData(), StandardCharsets.UTF_8);//Decodificando com UTF-8
+
+            /*
+            /Printando apenas as mensagems (tirar o método trim() faz com que
+            caracteres extras não pertinentes ao ocnteúdo da mensagem sejam impressos
+             */
+            System.out.println("Ack Recebido! A mensagem '"+texto.trim()+"' chegou no servidor com sucesso!");
+
+            /*Fechando conexão para liberar a porta
+            *->Toda vez que o servidor enviar um ack para o cliente, usa-se a mesma porta;
+            * Se a conexão não for fechada, a classe lança uma exceção, indicando que a porta ainda está sendo usada
+             */
             ack.close();
 
-            // break the loop if user enters "bye"
-            if (inp.equals("bye"))
-                break;
+            // Sai do loop caso o usuário digite "bye"
+            if (input.equals("bye")) break;
         }
     }
 }
