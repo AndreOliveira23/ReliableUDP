@@ -84,6 +84,35 @@ public class UDPClient {
                 System.out.println("(5)ACK Recebido! A mensagem '"+ input +"' chegou no servidor com sucesso!");
                 System.out.println("===============================================================");
 
+            } else if (texto.contains("roteador")) {
+
+                System.out.println("Seu pacote saiu da máquina-cliente");
+                Thread.sleep(2000);
+                System.out.println("Pacote chegou no roteador R1, sendo o 5º na fila");
+                Thread.sleep(2400);
+                System.out.println("Roteador R1 enviou o pacote 1");
+                Thread.sleep(2700);
+                System.out.println("Roteador R1 enviou o pacote 2");
+                Thread.sleep(2600);
+                System.out.println("Roteador R1 enviou o pacote 3");
+                Thread.sleep(2900);
+                System.out.println("Roteador R1 enviou o pacote 4");
+                Thread.sleep(2700);
+                System.out.println("O Roteador R1 enviou o seu pacote para o Roteador R2");
+                Thread.sleep(2800);
+                System.out.println("O pacote chegou no roteador R2, sendo o 3º na fila");
+                Thread.sleep(2600);
+                System.out.println("Roteador R2 enviou o pacote 1");
+                Thread.sleep(2300);
+                System.out.println("Roteador R2 enviou o pacote 2");
+                Thread.sleep(2200);
+                System.out.println("O Roteador R2 enviou o seu pacote pacote para o servidor!");
+                Thread.sleep(4000);
+                System.out.println("Ack recebido!! A mensagem '" + input + "' chegou no servidor com sucesso!");
+                System.out.println("===============================================================");
+
+
+
             } else {
                 System.out.println("(final)Ack Recebido! A mensagem '" + texto.trim() + "' chegou no servidor com sucesso!");
             }
