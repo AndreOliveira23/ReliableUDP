@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 
-public class UDPClient2 {
+public class UDPClient {
     public static void main(String args[]) throws Exception {
         //Three-leg-handshaking com o servidor
         estabelecerConexao();//Conectando ao servidor
@@ -114,7 +114,28 @@ public class UDPClient2 {
 
 
             } else if (texto.contains("compartilhamento")) {
-
+                
+                int tamanhoDaMensagem = input.length();
+                String pacote1 = input.substring(0,tamanhoDaMensagem/2);
+                String pacote2 = input.substring((tamanhoDaMensagem/2),tamanhoDaMensagem);
+                System.out.println("Pacote1 = "+pacote1);
+                System.out.println("Pacote2 = "+pacote2);
+                int x = random.nextInt(2);
+                if(x == 0) {
+                    System.out.println("Houve colisão de RTS entre os pacotes. Aplicando back-off exponencial\nno pacote 2 e reenviando pacote 1 ");
+                }else {
+                    System.out.println("Não houve colisão de RTS. CTS obtido para o pacote 1");
+                }
+                System.out.println("Enviando pacote 1....");
+                Thread.sleep(3000);
+                System.out.println("Pacote 1 enviado!!");
+                Thread.sleep(2000);
+                System.out.println("CTS obtido para o pacote 2");
+                Thread.sleep(3000);
+                System.out.println("Enviando pacote 2....");
+                Thread.sleep(1500);
+                System.out.println("Pacote 2 enviado!!");
+                Thread.sleep(3000);
                 System.out.println("Ack Recebido! A mensagem '" + input + "' chegou no servidor com sucesso!");
                 System.out.println("===============================================================");
 
