@@ -3,7 +3,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Random;
 
-public class UDPServer {
+public class UDPServer2 {
 
     public static void main(String[] args) throws Exception {
         //Three-leg-handshaking com o cliente
@@ -56,7 +56,17 @@ public class UDPServer {
 
                 case 2:
                     System.out.println("Simulação de roteador com fila e diferentes tamanhos: \n");
+                    mensagem = "ACK recebido! simulação de roteador com fila e diferentes tamanhos....";
+                    ack = new DatagramPacket(mensagem.getBytes(), mensagem.length(), ip, 1235);
+                    pacote.send(ack);//Enviando ACK de fato
+                    Thread.sleep(26000);
+                    System.out.println("Mensagem recebida! > "+String.valueOf(data(receive)));
+                    System.out.println("Enviando ACK para o cliente...");
                     System.out.println("===============================================================");
+                    receive = new byte[65535];//Limpando o buffer
+
+                    continue;
+
 
                 case 3:
                     System.out.println("Simulação de diferentes taxas de transmissão: \n");
