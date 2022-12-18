@@ -4,20 +4,20 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 
-public class UDPClient {
+public class UDPClient2 {
     public static void main(String args[]) throws Exception {
-        //Three-leg-handshaking entre cliente e servidor
+        //Three-leg-handshaking com o servidor
         estabelecerConexao();//Conectando ao servidor
 
-        Scanner teclado = new Scanner(System.in);//Input do usuário
+        Scanner teclado = new Scanner(System.in);//Scanner para receber input do usuário
 
-        DatagramSocket datagrama = new DatagramSocket();//Criando socket para enviar dados (mensagem)
+        DatagramSocket datagrama = new DatagramSocket();//Criando socket para enviar mensagem ao servidor
         InetAddress ip = InetAddress.getLocalHost();//IP = 127.0.0.1 (Localhost)
         byte buffer[] = null;
 
         //Loop enquanto cliente não encerrar a conexão
         while (true) {
-            System.out.println("Digite a mensagem: ");
+            System.out.println("Digite a mensagem ou digite 'exit' para encerrar a conexão: ");
             String input = teclado.nextLine();
 
             /*Convertendo String em array de Bytes
@@ -31,7 +31,11 @@ public class UDPClient {
             //Enviando dados
             datagrama.send(pacote);
 
-            //==========================================================================================================
+            /*O pacote é enviado para o servidor. No servidor é usado Random pra decidir qual simulação será feita
+                O servidor envia mensagem para o cliente, e a partir disso, as simulações começam
+             */
+
+        //==========================================================================================================
 
 
             //RECEBENDO ACK DO SERVIDOR
@@ -41,50 +45,32 @@ public class UDPClient {
 
             ReceivePacote = new DatagramPacket(receive, receive.length);//Colocando conteudo do ack na variável
             ack.receive(ReceivePacote);//Recebendo ack via socket 1235
-            String texto = new String(ReceivePacote.getData(), StandardCharsets.UTF_8);//Decodificando com UTF-8
+            String texto = new String(ReceivePacote.getData(), StandardCharsets.UTF_8);//Decodificando texto enviado pelo servidor com UTF-8
             Random random = new Random();
+
             /*
             /Printando apenas as mensagems (tirar o método trim() faz com que
             caracteres extras não pertinentes ao ocnteúdo da mensagem sejam impressos
              */
+
             if (texto.contains("perdido")) {//Simulação de perda de pacote
-                System.out.println("TIMEOUT!! ACK não recebido. Pacote perdido, precisa reenviar...");
+
+                Thread.sleep(2700);
+                System.out.println(texto.trim());
                 System.out.println("===============================================================");
 
-            } else if (texto.contains("Calculando")) {
-                System.out.println("Simulando calculo de atraso de propagação....");
+            } else if (texto.contains("Calculando")) { //Simulação de cálculo de atraso de propagação
+
+                System.out.println("Simulando cálculo de atraso de propagação....");
                 int n = random.nextInt(3);
                 int distancia = random.nextInt(100);
                 float velocidade = random.nextFloat() * 10;
-                System.out.println("Distancia: " + distancia + " km"); // 10km = 10000 m
+                System.out.println("Distância: " + distancia + " km"); // 10km = 10000 m
                 System.out.printf("Velocidade: %.2f ms", velocidade);
                 System.out.println("\nAtraso de propagação (d/v) = ");
                 System.out.println("===============================================================");
 
-            } else if (texto.contains("taxas")) {
-
-                int tamanhoDoPacote = random.nextInt(2000);
-                System.out.println("Tamanho do pacote: " + tamanhoDoPacote + " Bytes");
-                int[] taxas = new int[5];
-
-                for (int i = 0; i < 5; i++) {
-                    taxas[i] = 1 + random.nextInt(100);
-                    double tempoDeTransmissão = (((tamanhoDoPacote * 8) / (taxas[i])) * 0.001);
-                    System.out.printf("Com uma taxa de tranmissão de %d Kbps, o pacote levaria %.3f segundos pra ser transmitido\n", +taxas[i], tempoDeTransmissão);
-                }
-                System.out.println("===============================================================");
-
-
-            } else if (texto.contains("compartilhamento")) {
-
-                System.out.println("(4)Ack Recebido! A mensagem '" + input + "' chegou no servidor com sucesso!");
-
-            } else if (texto.contains("6")) {
-
-                System.out.println("(5)ACK Recebido! A mensagem '"+ input +"' chegou no servidor com sucesso!");
-                System.out.println("===============================================================");
-
-            } else if (texto.contains("roteador")) {
+            } else if (texto.contains("roteador")) {//Simulação de roteador com fila
 
                 System.out.println("Seu pacote saiu da máquina-cliente");
                 Thread.sleep(2000);
@@ -111,10 +97,36 @@ public class UDPClient {
                 System.out.println("Ack recebido!! A mensagem '" + input + "' chegou no servidor com sucesso!");
                 System.out.println("===============================================================");
 
+            } else if (texto.contains("taxas")) { //Simulação de diferentes taxas de transmissão
+
+                int tamanhoDoPacote = random.nextInt(2000);
+                System.out.println("Tamanho do pacote: " + tamanhoDoPacote + " Bytes");
+                int[] taxas = new int[5];
+
+                for (int i = 0; i < 5; i++) {
+                    taxas[i] = 1 + random.nextInt(100);
+                    double tempoDeTransmissão = (((tamanhoDoPacote * 8) / (taxas[i])) * 0.001);
+                    System.out.printf("Com uma taxa de tranmissão de %d Kbps, o pacote levou %.3f segundos pra ser transmitido\n", +taxas[i], tempoDeTransmissão);
+                }
+                Thread.sleep(2000);
+                System.out.println("ACK recebido!! A mensagem '"+input+"' chegou no servidor com sucesso!");
+                System.out.println("===============================================================");
 
 
-            } else {
-                System.out.println("(final)Ack Recebido! A mensagem '" + texto.trim() + "' chegou no servidor com sucesso!");
+            } else if (texto.contains("compartilhamento")) {
+
+                System.out.println("Ack Recebido! A mensagem '" + input + "' chegou no servidor com sucesso!");
+                System.out.println("===============================================================");
+
+            } else if (texto.contains("5")) {
+
+                System.out.println("ACK Recebido! A mensagem '"+ input +"' chegou no servidor com sucesso!");
+                System.out.println("===============================================================");
+
+
+            } else if (texto.contains("sucesso")) {
+                System.out.println("Ack Recebido! A mensagem '" + input + "' chegou no servidor com sucesso \n ( e sem interferências)!");
+                System.out.println("===============================================================");
             }
 
             /*Fechando conexão para liberar a porta
@@ -124,7 +136,7 @@ public class UDPClient {
             ack.close();
 
             // Sai do loop caso o usuário digite "bye"
-            if (input.equals("bye")) break;
+            if (input.equals("exit")) break;
         }
     }
     public static void estabelecerConexao() throws Exception {
