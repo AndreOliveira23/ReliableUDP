@@ -7,7 +7,7 @@ public class UDPServer2 {
 
     public static void main(String[] args) throws Exception {
         //Three-leg-handshaking com o cliente
-        estabelecerConexao();
+        estabelecerConexao();//Conectando ao cliente
 
         //Criando socket para receber mensagens na porta 1234
         DatagramSocket datagrama = new DatagramSocket(1234);
@@ -31,13 +31,13 @@ public class UDPServer2 {
             DatagramPacket ack = null;
 
             Random random = new Random();
-            int n = random.nextInt(6);
+            int n = random.nextInt(7);
 
             switch(n){
                 case 0:
-                    System.out.println("Simulação de perda de pacote: \n");
+                    System.out.println("Simulando de perda de pacote: \n");
                     System.out.println("===============================================================");
-                    mensagem = "ACK não recebido. Pacote perdido, precisa reenviar...";
+                    mensagem = "TIMEOUT!! ACK não recebido. Pacote perdido, precisa reenviar...";//Mensagem a ser enviada para o cliente
                     ack = new DatagramPacket(mensagem.getBytes(), mensagem.length(), ip, 1235);
                     pacote.send(ack);//Enviando ACK de fato
                     receive = new byte[65535];//Limpando o buffer
@@ -45,6 +45,8 @@ public class UDPServer2 {
 
                 case 1:
                     System.out.println("Simulação de atraso de propagação: \n");
+
+
                     System.out.println("Enviando ACK para o cliente....");
                     System.out.println("===============================================================");
                     Thread.sleep(3000);
@@ -55,7 +57,7 @@ public class UDPServer2 {
                     continue;
 
                 case 2:
-                    System.out.println("Simulação de roteador com fila e diferentes tamanhos: \n");
+                    System.out.println("Simulando roteador com fila e diferentes tamanhos: \n");
                     mensagem = "ACK recebido! simulação de roteador com fila e diferentes tamanhos....";
                     ack = new DatagramPacket(mensagem.getBytes(), mensagem.length(), ip, 1235);
                     pacote.send(ack);//Enviando ACK de fato
@@ -64,13 +66,12 @@ public class UDPServer2 {
                     System.out.println("Enviando ACK para o cliente...");
                     System.out.println("===============================================================");
                     receive = new byte[65535];//Limpando o buffer
-
                     continue;
 
-
                 case 3:
-                    System.out.println("Simulação de diferentes taxas de transmissão: \n");
-                    Thread.sleep(3000);
+                    System.out.println("Simulando diferentes taxas de transmissão: \n");
+                    Thread.sleep(5000);
+                    System.out.println("Mensagem recebida: "+mensagem);
                     System.out.println("Enviando ACK para o cliente....");
                     System.out.println("===============================================================");
                     mensagem = "ACK recebido! Simulando entregas com diferentes taxas e transmissão....";
@@ -90,21 +91,20 @@ public class UDPServer2 {
                     int x = random.nextInt(2);
                     if(x == 0) {
                         System.out.println("Houve colisão de RTS entre os pacotes. Aplicando back-off exponencial no pacote 2 e reenviando pacote 1 ");
-
                     }else {
                         System.out.println("Não houve colisão de RTS. CTS obtido para o pacote 1");
-                        System.out.println("Enviando pacote 1....");
-                        Thread.sleep(3000);
-                        System.out.println("Pacote 1 enviado!!");
-                        Thread.sleep(2000);
-                        System.out.println("CTS obtido para o pacote 2");
-                        Thread.sleep(3000);
-                        System.out.println("Enviando pacote 2....");
-                        Thread.sleep(1500);
-                        System.out.println("Pacote 2 enviado!!");
-                        Thread.sleep(2000);
-                        System.out.println("Mensagem completa> "+pacote1+pacote2);
                     }
+                    System.out.println("Enviando pacote 1....");
+                    Thread.sleep(3000);
+                    System.out.println("Pacote 1 enviado!!");
+                    Thread.sleep(2000);
+                    System.out.println("CTS obtido para o pacote 2");
+                    Thread.sleep(3000);
+                    System.out.println("Enviando pacote 2....");
+                    Thread.sleep(1500);
+                    System.out.println("Pacote 2 enviado!!");
+                    Thread.sleep(2000);
+                    System.out.println("Mensagem completa> "+pacote1+pacote2);
                     System.out.println("Enviando ACK para o cliente....");
                     System.out.println("===============================================================");
                     Thread.sleep(5000);
@@ -115,7 +115,7 @@ public class UDPServer2 {
                     continue;
 
                 case 5:
-                    System.out.println("Simulação de buffer de recepção + lentidão para leitura");
+                    System.out.println("Simulando de buffer de recepção + lentidão para leitura: ");
                     String text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit "+data(receive);
                     String[] bufferSimulado = text.split(" ");
                     for (int i=0;i<bufferSimulado.length;i++){
@@ -125,7 +125,16 @@ public class UDPServer2 {
                     System.out.println("Mensagem recebida!!> " + data(receive)+"");
                     System.out.println("Enviando ACK para o cliente....");
                     System.out.println("===============================================================");
-                    mensagem = "6-ACK Recebido! Simulação de buffer!66";
+                    mensagem = "(5)ACK Recebido! Simulação de buffer!";
+                    ack = new DatagramPacket(mensagem.getBytes(),mensagem.length(),ip,1235);
+                    pacote.send(ack);
+                    continue;
+
+                case 6:
+                    System.out.println("Mensagem recebida >> "+String.valueOf(data(receive)));
+                    System.out.println("Enviando ACK para o cliente....");
+                    System.out.println("===============================================================");
+                    mensagem = "ACK Recebido! a mensagem chegou com sucesso sem interferências!";
                     ack = new DatagramPacket(mensagem.getBytes(),mensagem.length(),ip,1235);
                     pacote.send(ack);
                     continue;
@@ -134,7 +143,7 @@ public class UDPServer2 {
             pacote.close();//Fechando conexão com porta 1235 para evitar exception de porta sendo usada;
 
             //Para de executar caso o cliente envie 'bye'
-            if (data(receive).toString().equals("bye")) {
+            if (data(receive).toString().equals("exit")) {
                 System.out.println("Cliente encerrou a conexão!");
                 break;
             }
