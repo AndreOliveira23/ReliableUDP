@@ -3,7 +3,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Random;
 
-public class UDPServer2 {
+public class UDPServer {
 
     public static void main(String[] args) throws Exception {
         //Three-leg-handshaking com o cliente
@@ -82,35 +82,13 @@ public class UDPServer2 {
 
                 case 4:
                     System.out.println("Simulação de compartilhamento de banda");
-                    String input = String.valueOf(data(receive));
-                    int tamanhoDaMensagem = input.length();
-                    String pacote1 = input.substring(0,tamanhoDaMensagem/2);
-                    String pacote2 = input.substring((tamanhoDaMensagem/2),tamanhoDaMensagem);
-                    System.out.println("Pacote1 = "+pacote1);
-                    System.out.println("Pacote2 = "+pacote2);
-                    int x = random.nextInt(2);
-                    if(x == 0) {
-                        System.out.println("Houve colisão de RTS entre os pacotes. Aplicando back-off exponencial no pacote 2 e reenviando pacote 1 ");
-                    }else {
-                        System.out.println("Não houve colisão de RTS. CTS obtido para o pacote 1");
-                    }
-                    System.out.println("Enviando pacote 1....");
-                    Thread.sleep(3000);
-                    System.out.println("Pacote 1 enviado!!");
-                    Thread.sleep(2000);
-                    System.out.println("CTS obtido para o pacote 2");
-                    Thread.sleep(3000);
-                    System.out.println("Enviando pacote 2....");
-                    Thread.sleep(1500);
-                    System.out.println("Pacote 2 enviado!!");
-                    Thread.sleep(2000);
-                    System.out.println("Mensagem completa> "+pacote1+pacote2);
-                    System.out.println("Enviando ACK para o cliente....");
-                    System.out.println("===============================================================");
-                    Thread.sleep(5000);
                     mensagem = "ACK Recebido! Simulação de compartilhamento de banda aconteceu no servidor!";
                     ack = new DatagramPacket(mensagem.getBytes(),mensagem.length(),ip,1235);
                     pacote.send(ack);
+                    Thread.sleep(10500);
+                    System.out.println("Mensagem recebida >> "+data(receive));
+                    System.out.println("Enviando ACK para o cliente....");
+                    System.out.println("===============================================================");
                     receive = new byte[65535];
                     continue;
 
