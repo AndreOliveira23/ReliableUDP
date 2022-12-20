@@ -2,6 +2,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Random;
+import java.math.*;
 
 public class UDPServer {
 
@@ -48,11 +49,11 @@ public class UDPServer {
 
                 System.out.println("Simulando de atraso de propagação: \n");
                 Random random = new Random();
-                int distancia = random.nextInt(100);
-                float velocidade = random.nextFloat() * 10;
-                System.out.println("Distância: " + distancia + " km"); // 10km = 10000 m
-                System.out.printf("Velocidade: %.2f ms", velocidade);
-                System.out.println("\nAtraso de propagação (d/v) = ");
+                int distancia = 1+random.nextInt(100);// '1+' porque o limite inferior de random.nextInt é 0
+                double velocidade = 2*(Math.pow(10,8));
+                System.out.println("Distância: " + distancia + " km"); 
+                System.out.printf("Velocidade: 2x10⁸ m/s", velocidade);
+                System.out.println("\nAtraso de propagação (d/v) = "+distancia*1000000/velocidade+" ms");
                 System.out.print("Mensagem recebida: ");
                 String[] novaMensagem = new String[mensagem.length()-1];
                 for(int i=1;i<codigoDaSimulacao.length;i++) { //Loop passando pela mensagem completa (sem o código, que está no índice (0)
